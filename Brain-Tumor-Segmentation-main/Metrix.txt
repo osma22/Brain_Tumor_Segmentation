@@ -1,0 +1,17 @@
+%%writefile metrics.py
+
+import numpy as np
+import tensorflow as tf
+from tensorflow.keras import backend as K
+
+smooth = 1e-15
+def dice_coef(mask, y_pred):
+    mask = tf.keras.layers.Flatten()(mask)
+    mask = tf.cast(mask, tf.float32)
+    y_pred = tf.cast(y_pred, tf.float32)
+    y_pred = tf.keras.layers.Flatten()(y_pred)
+    intersection = tf.reduce_sum(mask * y_pred)
+    return (2. * intersection + smooth) / (tf.reduce_sum(mask) + tf.reduce_sum(y_pred) + smooth)
+
+def dice_loss(mask, y_pred):
+    return 1.0 - dice_coef(mask, y_pred)
